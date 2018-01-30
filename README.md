@@ -1,10 +1,20 @@
 # Oh My WeChat
 
-在 MacOS 中自动安装[微信防撤回插件](https://github.com/TKkk-iOSer/WeChatPlugin-MacOS)并打开微信。
+一个通过终端打开微信并在打开前自动安装[微信防撤回插件](https://github.com/TKkk-iOSer/WeChatPlugin-MacOS)的命令行工具。
 
 ## 如何使用
 
-在终端中运行 `curl -o- -L https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/install.sh | bash -s` 安装，然后就可以运行命令 `omw` 自动安装防撤回插件（如果没有安装过的话）并打开微信了。
+### 安装
+
+在终端中运行 `curl -o- -L https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/install.sh | bash -s` 即可。
+
+### 运行
+
+安装完成后，在终端中运行 `owm` 即可打开微信，脚本会检测微信目前有没有安装防撤回插件，如果没有会自动下载安装。
+
+### 卸载
+
+运行 `curl -o- -L https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/uninstall.sh | bash -s` 即可。
 
 ## 运行截图
 

@@ -6,20 +6,22 @@ app_executable_path="${app_bundle_path}/${app_name}"
 app_executable_backup_path="${app_executable_path}_backup"
 plugin_dir="WeChatPlugin-MacOS-master"
 
-if [ ! -f "$app_executable_backup_path" ]
-then
-  cd $TMPDIR
-  if [ ! -f "$plugin_dir" ]
-  then
-    echo "开始下载防撤回插件……"
-    curl -L -o ${plugin_dir}.zip https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/archive/master.zip
-    unzip -o -q ${plugin_dir}.zip
-    rm ${plugin_dir}.zip
-    echo "下载完成"
-  fi
-  echo "开始安装防撤回插件"
-  ./${plugin_dir}/Other/Install.sh
-  echo "防撤回插件安装完成"
+if [ ! -f "$app_executable_backup_path" ]; then
+	cd $TMPDIR
+	if [ ! -f "$plugin_dir" ]; then
+		echo "开始下载防撤回插件……"
+		curl -L -o ${plugin_dir}.zip https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/archive/master.zip
+		unzip -o -q ${plugin_dir}.zip
+		rm ${plugin_dir}.zip
+		echo "下载完成"
+	else
+		echo "检测到已下载的插件安装目录，跳过网络下载步骤"
+	fi
+	echo "开始安装防撤回插件"
+	./${plugin_dir}/Other/Install.sh
+	echo "防撤回插件安装完成"
+else
+	echo "已安装过防撤回插件，跳过自动安装步骤"
 fi
 
 echo "打开微信"
