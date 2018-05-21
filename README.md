@@ -22,7 +22,8 @@
 
 ## 运行截图
 
-![运行截图](https://user-images.githubusercontent.com/5035625/35378753-d7c202f2-01ee-11e8-8b71-afe38e8cda56.png)
+![第一次运行](https://user-images.githubusercontent.com/5035625/40317415-fe3b55b2-5d53-11e8-8649-cf50fb4d4fef.png)
+![第二次运行](https://user-images.githubusercontent.com/5035625/40317468-28c083a2-5d54-11e8-8c78-640f1e4e42a5.png)
 
 ## 许可
 
