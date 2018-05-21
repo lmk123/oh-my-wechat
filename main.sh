@@ -46,7 +46,7 @@ getlatestversion() {
 
 # 检查是否有新的版本
 hasupdate() {
-  getlatestversion
+	getlatestversion
 	if [ "$current_version" != $latest_version ]; then
 		return 0
 	else
@@ -67,7 +67,6 @@ is_installed() {
 		install_status=2
 	else
 		install_status=0
-		return 100
 	fi
 }
 
@@ -117,10 +116,10 @@ elif [ $install_status -eq 1 ]; then
 	# 如果因为微信自动更新导致插件被删除
 elif [ $install_status -eq 2 ]; then
 	# 如果不需要更新则安装当前版本。因为有缓存所以无需重新下载，会很快
-	if [ $noupdate_cmd == "-n" ]; then
+	if [ "$noupdate_cmd" == "-n" ]; then
 		install_version $current_version
-		# 如果需要安装更新则检查一下最新版本
 	else
+		# 如果需要安装更新则检查一下最新版本
 		getlatestversion
 		install_version $latest_version $current_version
 	fi
