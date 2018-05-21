@@ -1,3 +1,4 @@
 #!/bin/bash
-rm "/usr/local/bin/omw"
-echo "成功卸载 oh-my-wechat"
+rm /usr/local/bin/omw
+rm -rf ${HOME}/.oh_my_wechat
+echo 成功卸载 oh-my-wechat
