@@ -63,7 +63,7 @@ is_installed() {
 		echo 第一次运行时会将微信小助手更新到最新版本。
 		install_status=1
 	elif [ ! -f $app_executable_backup_path ]; then
-		echo 微信自动更新时删除了微信小助手
+		echo 监测到微信自动更新后删除了微信小助手
 		install_status=2
 	else
 		install_status=0
@@ -90,11 +90,11 @@ install_version() {
 		rm ${_version}.zip
 		echo 下载完成
 	fi
-	echo 开始安装防撤回插件……
+	echo 开始安装微信小助手……
 	./WeChatPlugin-MacOS-$_version/Other/Install.sh
 	# 写入版本
 	echo $_version >$version_file
-	echo 防撤回插件安装完成。
+	echo 微信小助手安装完成。
 }
 
 openwechat() {
