@@ -1,10 +1,6 @@
 # Oh My WeChat
 
-一个通过终端打开微信并在打开前自动安装/更新[微信小助手](https://github.com/TKkk-iOSer/WeChatPlugin-MacOS)的命令行工具。
-
-## Why?
-
-微信每次自动更新后都需要重新安装一遍微信小助手，所以我开发了这个命令行工具用于自动安装/更新微信小助手并打开微信。
+微信每次自动更新后都需要重新安装一遍[微信小助手](https://github.com/TKkk-iOSer/WeChatPlugin-MacOS)，所以我开发了这个命令行工具用于自动安装/更新微信小助手并打开微信。
 
 ## 如何使用
 
