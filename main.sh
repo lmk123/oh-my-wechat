@@ -1,11 +1,21 @@
 #!/bin/bash
 
+# 微信 app 的位置
+wechat_path=/Applications/WeChat.app
+
+# 没有安装微信则退出
+if [ ! -e $wechat_path ]; then
+  wechat_path=${HOME}/Applications/WeChat.app
+  if [ ! -e $wechat_path ]; then
+    echo 没有安装微信
+    exit 0
+  fi
+fi
+
 # 工作目录
 work_dir=${HOME}/.oh_my_wechat
 # 使用一个文件记录微信小助手的版本
 version_file=version
-# 微信 app 的位置
-wechat_path=/Applications/WeChat.app
 # 通过是否有 backup 文件判断微信里有没有安装微信小助手
 app_executable_backup_path=${wechat_path}/Contents/MacOS/WeChat_backup
 
