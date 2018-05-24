@@ -73,7 +73,7 @@ is_installed() {
     echo 第一次运行时会将微信小助手更新到最新版本。
     install_status=1
   elif [ ! -f $app_executable_backup_path ]; then
-    echo 监测到微信自动更新后删除了微信小助手
+    echo 检测到微信自动更新后删除了微信小助手
     install_status=2
   else
     install_status=0
@@ -82,6 +82,7 @@ is_installed() {
 
 # 安装插件
 install_version() {
+  installed="y"
   _version=$1
   _old_version=$2
   # 删除旧版安装包
@@ -108,8 +109,13 @@ install_version() {
 }
 
 openwechat() {
-  echo 打开微信
-  open $wechat_path
+  _isWeChatRunning=$(ps aux | grep [W]eChat.app | wc -l)
+  if [ -n "$installed" ] && [ $_isWeChatRunning != "0" ]; then
+    echo 检测到微信正在运行，请重启微信让小助手生效。
+  else
+    echo 打开微信
+    open $wechat_path
+  fi
 }
 
 is_installed
