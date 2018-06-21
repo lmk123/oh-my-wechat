@@ -8,6 +8,14 @@
 
 在终端中运行 `curl -o- -L https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/install.sh | bash -s` 即可。
 
+如果因为网络原因总是安装失败，你也可以按照下面的步骤手动安装：
+
+1. 在 `/usr/local/bin` 下新建一个 `omw` 的文件
+2. 将 [main.sh](https://github.com/lmk123/oh-my-wechat/blob/master/main.sh) 的内容复制进 `omw` 文件
+3. 运行 `chmod 755 /usr/local/bin/omw` 修改文件权限
+
+接下来就可以运行 `omw` 了。
+
 ### 运行 Oh My WeChat
 
 在成功安装 Oh My WeChat 后，运行 `omw` 就会安装小助手，之后就无需再运行了。
