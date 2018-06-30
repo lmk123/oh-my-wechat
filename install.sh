@@ -1,5 +1,9 @@
 #!/bin/bash
 omw_path=/usr/local/bin/omw
+if [ ! -w /usr/local/bin ]; then
+  echo 为了安装 Oh My WeChat，请输入密码 ：
+  sudo chown $(whoami) /usr/local/bin
+fi
 echo 开始下载 Oh My WeChat...
 curl -o $omw_path https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/main.sh
 if [ 0 -eq $? ]; then
