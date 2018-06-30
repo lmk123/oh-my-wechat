@@ -1,25 +1,32 @@
 # Oh My WeChat
 
-在使用[微信小助手](https://github.com/TKkk-iOSer/WeChatPlugin-MacOS)（一款运行在 macOS 上，给微信提供消息防撤回、自动回复等功能的插件）时，我遇到了几个问题：
-
-1. 微信每次自动更新后都会删除已经安装的微信小助手，并且直到我看到一条被撤回的消息才意识到微信自动更新了
-2. 每次安装小助手都需要去文档上复制命令，安装完成后还需要自行将安装包删除，比较繁琐
-
-因此，我开发了这个命令行工具，只需运行 `omw`，它就会自动安装/更新微信小助手并打开微信，这确保每次打开微信后小助手都是安装好了的，不会让我们错过任何一条被撤回的消息；另外，它会保存微信小助手的安装包，在小助手没有新版本时会直接使用保存的安装包重新安装，无需再次通过网络下载；在小助手更新后，旧版的安装包会自动删除。
+这是为 [TKkk-iOSer/WeChatPlugin-MacOS](https://github.com/TKkk-iOSer/WeChatPlugin-MacOS)（后面称呼为“小助手”）开发的安装/更新工具。
 
 ## 如何使用
 
-### 安装
+### 安装 Oh My WeChat
 
 在终端中运行 `curl -o- -L https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/install.sh | bash -s` 即可。
 
 你可以关注本项目，当我更新代码后你会得到通知，然后你可以重新运行这条命令将 Oh My WeChat 更新到最新版本。
 
-### 运行
+如果因为网络原因总是安装失败，你也可以按照下面的步骤手动安装：
 
-安装完成后，你可以运行 `omw` 自动安装/更新微信小助手并打开微信；你也可以运行 `omw -n` 跳过检查更新的步骤。
+1. 在 `/usr/local/bin` 下新建一个 `omw` 的文件
+2. 将 [main.sh](https://github.com/lmk123/oh-my-wechat/blob/master/main.sh) 的内容复制进 `omw` 文件
+3. 运行 `chmod 755 /usr/local/bin/omw` 修改文件权限
 
-### 卸载
+接下来就可以运行 `omw` 了。
+
+### 运行 Oh My WeChat
+
+在成功安装 Oh My WeChat 后，运行 `omw` 就会安装小助手，之后就无需再运行了。
+
+当小助手提示你有新版本的时候，你可以再次运行 `omw` 将微信小助手更新到新版本。
+
+当微信自动更新导致小助手被删除时，你可以运行 `omw -n` 重新安装小助手，此时会直接使用上次下载的小助手安装包安装，无需重新下载；一般情况下，我们可能只会在看到一条撤回的消息时才发现小助手被删除了，如果你不希望漏掉任何一条撤回的消息，你可以始终通过运行 `omw` 启动微信，Oh My WeChat 一旦检测到小助手不存在就会重新安装。
+
+### 卸载 Oh My WeChat
 
 运行 `curl -o- -L https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/uninstall.sh | bash -s` 即可。
 
