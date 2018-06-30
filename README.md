@@ -13,6 +13,8 @@
 
 在终端中运行 `curl -o- -L https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/install.sh | bash -s` 即可。
 
+你可以关注本项目，当我更新代码后你会得到通知，然后你可以重新运行这条命令将 Oh My WeChat 更新到最新版本。
+
 ### 运行
 
 安装完成后，你可以运行 `omw` 自动安装/更新微信小助手并打开微信；你也可以运行 `omw -n` 跳过检查更新的步骤。

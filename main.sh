@@ -45,11 +45,15 @@ getlatestversion() {
   if [ -z $latest_version ]; then
     echo 正在检查新版本……
     latest_version=$(curl -I -s https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/releases/latest | grep Location | sed -n 's/.*\/v\(.*\)/\1/p')
-    latest_version=${latest_version//$'\r'/}
-    if [ "$current_version" != $latest_version ]; then
-      echo 发现新版本 v${latest_version}。
+    if [ -z "$latest_version" ]; then
+      echo 检查新版本时失败，将不会尝试安装新版本。
     else
-      echo 当前已是最新版本。
+      latest_version=${latest_version//$'\r'/}
+      if [ "$current_version" != $latest_version ]; then
+        echo 发现新版本 v${latest_version}。
+      else
+        echo 当前已是最新版本。
+      fi
     fi
   fi
 }
@@ -57,7 +61,7 @@ getlatestversion() {
 # 检查是否有新的版本
 hasupdate() {
   getlatestversion
-  if [ "$current_version" != $latest_version ]; then
+  if [ "$current_version" != "$latest_version" ]; then
     return 0
   else
     return 1
@@ -95,11 +99,16 @@ install_version() {
     echo 开始下载微信小助手 v${_version}……
     # 下载压缩包
     curl -L -o ${_version}.zip https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/archive/v${_version}.zip
-    # 解压为同名文件夹
-    unzip -o -q ${_version}.zip
-    # 删除压缩包
-    rm ${_version}.zip
-    echo 下载完成
+    if [ 0 -eq $? ]; then
+      # 解压为同名文件夹
+      unzip -o -q ${_version}.zip
+      # 删除压缩包
+      rm ${_version}.zip
+      echo 下载完成
+    else
+      echo 下载失败，请稍后重试。
+      exit 1
+    fi
   fi
   echo 开始安装微信小助手……
   ./WeChatPlugin-MacOS-$_version/Other/Install.sh
