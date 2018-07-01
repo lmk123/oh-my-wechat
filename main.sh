@@ -90,7 +90,7 @@ install_version() {
   _version=$1
   _old_version=$2
   # 删除旧版安装包
-  if [ -n $_old_version ] && [ -e WeChatPlugin-MacOS-$_old_version ]; then
+  if [ -n $_old_version ] && [ "$_old_version" != "$_version" ] && [ -e WeChatPlugin-MacOS-$_old_version ]; then
     rm -rf WeChatPlugin-MacOS-$_old_version
     echo 已删除旧版本 v${_old_version} 的缓存
   fi
