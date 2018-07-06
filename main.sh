@@ -61,7 +61,7 @@ getlatestversion() {
 # 检查是否有新的版本
 hasupdate() {
   getlatestversion
-  if [ "$current_version" != "$latest_version" ]; then
+  if [ ! -z "$latest_version" ] && [ "$current_version" != "$latest_version" ]; then
     return 0
   else
     return 1
