@@ -44,7 +44,7 @@ fi
 get_latest_version() {
   if [[ -z ${latest_version} ]]; then
     echo "正在检查新版本……"
-    latest_version=$(curl -I -s https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/releases/latest | grep Location | sed -n 's/.*\/v\(.*\)/\1/p')
+    latest_version=$(curl --retry 2 -I -s https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/releases/latest | grep Location | sed -n 's/.*\/v\(.*\)/\1/p')
     if [[ -z "$latest_version" ]]; then
       echo "检查新版本时失败，将不会尝试安装新版本。"
     else
@@ -98,7 +98,7 @@ install_version() {
   if [[ ! -e WeChatPlugin-MacOS-${_version} ]]; then
     echo "开始下载微信小助手 v${_version}……"
     # 下载压缩包
-    curl -L -o ${_version}.zip https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/archive/v${_version}.zip
+    curl --retry 2 -L -o ${_version}.zip https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/archive/v${_version}.zip
     if [[ 0 -eq $? ]]; then
       # 解压为同名文件夹
       unzip -o -q ${_version}.zip

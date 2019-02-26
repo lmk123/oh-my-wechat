@@ -30,3 +30,7 @@
 ## 许可
 
 MIT
+
+
+# 记录小助手的版本的文件地址，同时也可以用来判断小助手有没有被安装
+version_plist_path="${wechat_path}/Contents/MacOS/WeChatPlugin.framework/Resources/Info.plist"
