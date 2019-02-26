@@ -20,7 +20,7 @@
 
 ### 卸载 Oh My WeChat
 
-运行 `curl -o- -L https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/uninstall.sh | bash -s` 即可。
+运行 `omw uninstall` 即可。
 
 ## 运行截图
 

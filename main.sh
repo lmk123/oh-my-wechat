@@ -4,12 +4,28 @@
 wechat_path="/Applications/WeChat.app"
 
 # 没有安装微信则退出
-if [[ ! -e ${wechat_path} ]]; then
-  wechat_path="${HOME}/Applications/WeChat.app"
-  if [[ ! -e ${wechat_path} ]]; then
-    echo "没有安装微信"
-    exit 0
+if [[ ! -d ${wechat_path} ]]; then
+  wechat_path="/Applications/微信.app"
+  if [[ ! -d ${wechat_path} ]]; then
+    echo "应用程序文件夹中未发现微信，请检查微信是否有重命名或者移动路径位置"
+    exit
   fi
+fi
+
+# omw uninstall
+if [[ $1 == "uninstall" ]]; then
+  # 删除软链
+  rm -f /usr/local/bin/omw
+  # 删除工作目录
+  rm -rf ${HOME}/.oh_my_wechat
+  # 询问用户是否卸载微信小助手
+  echo "是否要将微信小助手一并卸载？[y/N]"
+  read uninstall_plugin
+  if [[ ${uninstall_plugin} == "y" ]]; then
+    # TODO: 卸载小助手的逻辑
+    echo "卸载小助手的逻辑没有开发"
+  fi
+  exit 0
 fi
 
 # 工作目录
