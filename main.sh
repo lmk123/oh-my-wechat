@@ -68,9 +68,8 @@ version_plist_path="${wechat_path}/Contents/MacOS/WeChatPlugin.framework/Resourc
 if [[ -f ${version_plist_path} ]]; then
   current_version=$(awk '/<key>CFBundleShortVersionString<\/key>/,/<string>.*<\/string>/' ${version_plist_path} | grep -o '\d\{1,\}\.\d\{1,\}\.\d\{1,\}')
   echo "当前微信小助手版本为 v${current_version}"
-  if [[ "$1" == "-n" ]]; then
-    echo "由于设置了 -n 参数，将不会检查更新。"
-  fi
+else
+  echo "没有安装微信小助手"
 fi
 
 # 创建工作目录
@@ -81,87 +80,83 @@ fi
 # 切换到工作目录
 cd ${work_dir}
 
-# 获取小助手的最新版本
-get_latest_version() {
-  if [[ -z ${latest_version} ]]; then
-    echo "正在检查新版本……"
-    latest_version=$(curl --retry 2 -I -s https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/releases/latest | grep Location | sed -n 's/.*\/v\(.*\)/\1/p')
-    if [[ -z "$latest_version" ]]; then
-      echo "检查新版本时失败，将不会尝试安装新版本。"
-    else
-      latest_version=${latest_version//$'\r'/}
-      if [[ "$current_version" != ${latest_version} ]]; then
-        echo "发现新版本 v${latest_version}。"
-      else
-        echo "当前已是最新版本。"
-      fi
-    fi
-  fi
-}
+# 已经下载过的安装包版本，同时当微信自动更新导致小助手被删除时，作为上一次安装过的版本号使用
+downloaded_version=$(find . -maxdepth 1 -type d -name 'WeChatPlugin-MacOS-*' -print -quit | grep -o '\d\{1,\}\.\d\{1,\}\.\d\{1,\}')
 
-# 检查是否有新的版本
-has_update() {
-  get_latest_version
-  if [[ ! -z "$latest_version" ]] && [[ "$current_version" != "$latest_version" ]]; then
-    return 0
-  else
-    return 1
-  fi
-}
+first_arg=$1
 
-# 判断插件是否已经安装过了
-# 0 表示安装过了
-# 1 表示微信没有安装小助手
-is_installed() {
-  if [[ -z ${current_version} ]]; then
-    echo "检测到微信没有安装小助手"
-    install_status=1
-  else
-    install_status=0
-  fi
-}
-
-# 安装小助手
-# TODO: 重新设计安装流程
-# - 检查有没有安装包
-#   - 如果有安装包
-#     - 检查有没有传 -n 参数
-#       - 如果没有，则检查安装包的版本是不是最新的
-#         - 如果是，则直接运行安装包
-#         - 如果不是，则下载安装最新版本并删除旧版本安装包
-#       - 如果有，则直接运行安装包
-#   - 如果没有安装包，则下载安装最新版本
-install_version() {
-  installed="y"
-  _version=$1
-  _old_version=$2
-  # 删除旧版安装包
-  if [[ -n ${_old_version} ]] && [[ "$_old_version" != "$_version" ]] && [[ -e WeChatPlugin-MacOS-${_old_version} ]]; then
-    rm -rf WeChatPlugin-MacOS-${_old_version}
-    echo "已删除旧版本 v${_old_version} 的缓存"
-  fi
-  # 如果没有下载过安装包
-  if [[ ! -e WeChatPlugin-MacOS-${_version} ]]; then
-    echo "开始下载微信小助手 v${_version}……"
+# 下载指定版本的小助手
+download() {
+  if [[ ! -e "WeChatPlugin-MacOS-${1}" ]]; then
+    echo "开始下载微信小助手 v${1}……"
     # 下载压缩包
-    curl --retry 2 -L -o ${_version}.zip https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/archive/v${_version}.zip
+    curl --retry 2 -L -o ${1}.zip https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/archive/v${1}.zip
     if [[ 0 -eq $? ]]; then
       # 解压为同名文件夹
-      unzip -o -q ${_version}.zip
+      unzip -o -q ${1}.zip
       # 删除压缩包
-      rm ${_version}.zip
+      rm ${1}.zip
       echo "下载完成"
     else
       echo "下载失败，请稍后重试。"
       exit 1
     fi
   fi
+}
+
+# 安装小助手
+install() {
+########################################################################################
+#                         没有设置 -n 参数（默认）                  设置了 -n 参数
+#  已安装小助手       查询最新版本，如果跟当前版本不一样，则更新             啥都不做
+#  没有安装小助手                 判断有无本地安装包                   判断有无本地安装包
+#
+#  有本地安装包              查询最新版本，直接安装                   直接安装本地安装包
+#  没有本地安装包            查询最新版本，直接安装                    查询最新版本，直接安装
+#########################################################################################
+  if [[ ${first_arg} == "-n" ]] && [[ -n ${current_version} ]]; then
+    echo "已安装微信小助手且使用了 -n 参数，无需检查更新"
+    return
+  elif [[ ${first_arg} == "-n" ]] && [[ -n ${downloaded_version} ]]; then
+    echo "未安装微信小助手，由于使用了 -n 参数，将直接安装已下载的版本 v${downloaded_version}"
+    _version=${downloaded_version}
+  else
+    if [[ ${first_arg} == "-n" ]] && [[ -z ${downloaded_version} ]]; then
+      echo "未安装微信小助手，也没有下载过安装包，所以即使使用了 -n 参数，仍需要检查并下载新版本"
+    fi
+    echo "正在查询新版本……"
+    latest_version=$(curl --retry 2 -I -s https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/releases/latest | grep Location | sed -n 's/.*\/v\(.*\)/\1/p')
+    if [[ -z "$latest_version" ]]; then
+      echo "查询新版本时失败，请稍后重试"
+      exit 1
+    else
+      latest_version=${latest_version//$'\r'/}
+      echo "微信小助手的最新版本为 v${latest_version}"
+    fi
+    _version=${latest_version}
+  fi
+
+  if [[ ${current_version} == ${_version} ]]; then
+    echo "当前已经安装了最新版本的小助手，无需重新安装"
+    exit 0
+  fi
+
+  # 下载要安装的版本
+  download ${_version}
+
+  # 删除之前已经下载（一般是旧版本）的安装包
+  if [[ ${_version} != ${downloaded_version} ]]; then
+    rm -rf ./WeChatPlugin-MacOS-${downloaded_version}
+    echo "已删除 v${downloaded_version} 的安装包"
+  fi
+
   echo "开始安装微信小助手……"
   ./WeChatPlugin-MacOS-${_version}/Other/Install.sh
   echo "微信小助手安装完成。"
+  installed="1"
 }
 
-openwechat() {
+open_wechat() {
   _isWeChatRunning=$(ps aux | grep [W]eChat.app | wc -l)
   if [[ -n "$installed" ]] && [[ ${_isWeChatRunning} != "0" ]]; then
     echo "检测到微信正在运行，请重启微信让小助手生效。"
@@ -171,16 +166,5 @@ openwechat() {
   fi
 }
 
-is_installed
-
-# 如果已经安装过插件
-if [[ ${install_status} -eq 0 ]]; then
-  if [[ "$1" != "-n" ]] && has_update; then
-    install_version
-  fi
-  # 如果小助手被卸载了，则走安装流程
-elif [[ ${install_status} -eq 1 ]]; then
-  install_version
-fi
-
-openwechat
+install
+open_wechat
