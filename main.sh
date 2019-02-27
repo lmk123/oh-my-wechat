@@ -12,24 +12,55 @@ if [[ ! -d ${wechat_path} ]]; then
   fi
 fi
 
-# omw uninstall
-if [[ $1 == "uninstall" ]]; then
+# 工作目录
+work_dir="${HOME}/.oh_my_wechat"
+
+# 卸载 Oh My WeChat
+uninstall_omw() {
   # 删除软链
   rm -f /usr/local/bin/omw
   # 删除工作目录
-  rm -rf ${HOME}/.oh_my_wechat
-  # 询问用户是否卸载微信小助手
-  echo "是否要将微信小助手一并卸载？[y/N]"
-  read uninstall_plugin
-  if [[ ${uninstall_plugin} == "y" ]]; then
-    # TODO: 卸载小助手的逻辑
-    echo "卸载小助手的逻辑没有开发"
-  fi
+  rm -rf ${work_dir}
+  echo "Oh My WeChat 卸载完成"
+}
+
+# 卸载插件
+uninstall_plugin() {
+  echo "TODO: 卸载微信小助手的功能还没开发"
+}
+
+# omw uninstall
+if [[ $1 == "uninstall" ]]; then
+  PS3='你的选择：'
+  options=("微信小助手" "Oh My WeChat" "两个都卸载" "取消")
+  echo "你想卸载哪一个？"
+  select opt in "${options[@]}"
+  do
+    case ${opt} in
+      "微信小助手")
+        uninstall_plugin
+        break
+        ;;
+      "Oh My WeChat")
+        uninstall_omw
+        break
+        ;;
+      "两个都卸载")
+        uninstall_plugin
+        uninstall_omw
+        break
+        ;;
+      "取消")
+        break
+        ;;
+      *)
+        echo "无效的选择"
+        ;;
+      esac
+  done
   exit 0
 fi
 
-# 工作目录
-work_dir="${HOME}/.oh_my_wechat"
 # 使用一个文件记录微信小助手的版本
 version_file="version"
 # 通过是否有 backup 文件判断微信里有没有安装微信小助手
