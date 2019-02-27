@@ -15,6 +15,25 @@ fi
 # 工作目录
 work_dir="${HOME}/.oh_my_wechat"
 
+# 创建工作目录
+if [[ ! -e ${work_dir} ]]; then
+  mkdir ${work_dir}
+fi
+
+# 切换到工作目录
+cd ${work_dir}
+
+# 记录小助手的版本的文件地址，同时也可以用来判断小助手有没有被安装
+version_plist_path="${wechat_path}/Contents/MacOS/WeChatPlugin.framework/Resources/Info.plist"
+
+# 用 current_version 记录小助手的当前版本
+if [[ -f ${version_plist_path} ]]; then
+  current_version=$(awk '/<key>CFBundleShortVersionString<\/key>/,/<string>.*<\/string>/' ${version_plist_path} | grep -o '\d\{1,\}\.\d\{1,\}\.\d\{1,\}')
+  echo "当前微信小助手版本为 v${current_version}"
+else
+  echo "当前没有安装微信小助手"
+fi
+
 # 卸载 Oh My WeChat
 uninstall_omw() {
   # 删除软链
@@ -26,7 +45,13 @@ uninstall_omw() {
 
 # 卸载小助手
 uninstall_plugin() {
-  echo "TODO: 卸载微信小助手的功能还没开发"
+  if [[ -n ${current_version} ]]; then
+    # 确保有当前版本的小助手安装包
+    download ${current_version} "卸载小助手时需要先下载小助手的安装包"
+    # 运行卸载脚本
+    ./WeChatPlugin-MacOS-${current_version}/Other/Uninstall.sh
+    echo "微信小助手卸载完成"
+  fi
 }
 
 # omw uninstall
@@ -61,25 +86,6 @@ if [[ $1 == "uninstall" ]]; then
   exit 0
 fi
 
-# 记录小助手的版本的文件地址，同时也可以用来判断小助手有没有被安装
-version_plist_path="${wechat_path}/Contents/MacOS/WeChatPlugin.framework/Resources/Info.plist"
-
-# 用 current_version 记录小助手的当前版本
-if [[ -f ${version_plist_path} ]]; then
-  current_version=$(awk '/<key>CFBundleShortVersionString<\/key>/,/<string>.*<\/string>/' ${version_plist_path} | grep -o '\d\{1,\}\.\d\{1,\}\.\d\{1,\}')
-  echo "当前微信小助手版本为 v${current_version}"
-else
-  echo "没有安装微信小助手"
-fi
-
-# 创建工作目录
-if [[ ! -e ${work_dir} ]]; then
-  mkdir ${work_dir}
-fi
-
-# 切换到工作目录
-cd ${work_dir}
-
 # 已经下载过的安装包版本，同时当微信自动更新导致小助手被删除时，作为上一次安装过的版本号使用
 downloaded_version=$(find . -maxdepth 1 -type d -name 'WeChatPlugin-MacOS-*' -print -quit | grep -o '\d\{1,\}\.\d\{1,\}\.\d\{1,\}')
 
@@ -88,6 +94,10 @@ first_arg=$1
 # 下载指定版本的小助手
 download() {
   if [[ ! -e "WeChatPlugin-MacOS-${1}" ]]; then
+    # 第二个参数作为要打印的消息
+    if [[ -n ${2} ]]; then
+      echo ${2}
+    fi
     echo "开始下载微信小助手 v${1}……"
     # 下载压缩包
     curl --retry 2 -L -o ${1}.zip https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/archive/v${1}.zip
