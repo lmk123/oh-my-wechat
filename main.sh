@@ -19,11 +19,6 @@ fi
 # 工作目录
 work_dir="${HOME}/.oh_my_wechat"
 
-# 创建工作目录
-if [[ ! -e ${work_dir} ]]; then
-  mkdir ${work_dir}
-fi
-
 # 切换到工作目录
 cd ${work_dir}
 
