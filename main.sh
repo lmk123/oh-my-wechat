@@ -34,6 +34,36 @@ else
   echo "当前没有安装微信小助手"
 fi
 
+# 判断微信是否正在运行
+is_wechat_running=$(ps aux | grep [W]eChat.app | wc -l)
+# 删掉前面的空白
+is_wechat_running="${is_wechat_running#"${is_wechat_running%%[![:space:]]*}"}"
+# 删掉后面的空白
+is_wechat_running="${is_wechat_running%"${is_wechat_running##*[![:space:]]}"}"
+
+# 下载指定版本的小助手
+download() {
+  if [[ ! -e "WeChatPlugin-MacOS-${1}" ]]; then
+    # 第二个参数作为要打印的消息
+    if [[ -n ${2} ]]; then
+      echo ${2}
+    fi
+    echo "开始下载微信小助手 v${1}……"
+    # 下载压缩包
+    curl --retry 2 -L -o ${1}.zip https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/archive/v${1}.zip
+    if [[ 0 -eq $? ]]; then
+      # 解压为同名文件夹
+      unzip -o -q ${1}.zip
+      # 删除压缩包
+      rm ${1}.zip
+      echo "下载完成"
+    else
+      echo "下载失败，请稍后重试。"
+      exit 1
+    fi
+  fi
+}
+
 # 卸载 Oh My WeChat
 uninstall_omw() {
   # 删除软链
@@ -51,11 +81,14 @@ uninstall_plugin() {
     # 运行卸载脚本
     ./WeChatPlugin-MacOS-${current_version}/Other/Uninstall.sh
     echo "微信小助手卸载完成"
+    if [[ ${is_wechat_running} != "0" ]]; then
+      echo "检测到微信正在运行，需要重启微信才能关闭小助手"
+    fi
   fi
 }
 
 # omw uninstall
-if [[ $1 == "uninstall" ]]; then
+if [[ $1 == "un" ]]; then
   PS3='你的选择：'
   options=("微信小助手" "Oh My WeChat" "两个都卸载" "取消")
   echo "你想卸载哪一个？"
@@ -91,29 +124,6 @@ downloaded_version=$(find . -maxdepth 1 -type d -name 'WeChatPlugin-MacOS-*' -pr
 
 first_arg=$1
 
-# 下载指定版本的小助手
-download() {
-  if [[ ! -e "WeChatPlugin-MacOS-${1}" ]]; then
-    # 第二个参数作为要打印的消息
-    if [[ -n ${2} ]]; then
-      echo ${2}
-    fi
-    echo "开始下载微信小助手 v${1}……"
-    # 下载压缩包
-    curl --retry 2 -L -o ${1}.zip https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/archive/v${1}.zip
-    if [[ 0 -eq $? ]]; then
-      # 解压为同名文件夹
-      unzip -o -q ${1}.zip
-      # 删除压缩包
-      rm ${1}.zip
-      echo "下载完成"
-    else
-      echo "下载失败，请稍后重试。"
-      exit 1
-    fi
-  fi
-}
-
 # 安装小助手
 install() {
 ########################################################################################
@@ -148,27 +158,25 @@ install() {
 
   if [[ ${current_version} == ${_version} ]]; then
     echo "当前已经安装了最新版本的小助手，无需重新安装"
-    exit 0
+  else
+    # 下载要安装的版本
+    download ${_version}
+
+    # 删除之前已经下载（一般是旧版本）的安装包
+    if [[ ${_version} != ${downloaded_version} ]]; then
+      rm -rf ./WeChatPlugin-MacOS-${downloaded_version}
+      echo "已删除 v${downloaded_version} 的安装包"
+    fi
+
+    echo "开始安装微信小助手……"
+    ./WeChatPlugin-MacOS-${_version}/Other/Install.sh
+    echo "微信小助手安装完成。"
+    installed="1"
   fi
-
-  # 下载要安装的版本
-  download ${_version}
-
-  # 删除之前已经下载（一般是旧版本）的安装包
-  if [[ ${_version} != ${downloaded_version} ]]; then
-    rm -rf ./WeChatPlugin-MacOS-${downloaded_version}
-    echo "已删除 v${downloaded_version} 的安装包"
-  fi
-
-  echo "开始安装微信小助手……"
-  ./WeChatPlugin-MacOS-${_version}/Other/Install.sh
-  echo "微信小助手安装完成。"
-  installed="1"
 }
 
 open_wechat() {
-  _isWeChatRunning=$(ps aux | grep [W]eChat.app | wc -l)
-  if [[ -n "$installed" ]] && [[ ${_isWeChatRunning} != "0" ]]; then
+  if [[ -n "$installed" ]] && [[ ${is_wechat_running} != "0" ]]; then
     echo "检测到微信正在运行，请重启微信让小助手生效。"
   else
     echo "打开微信"
