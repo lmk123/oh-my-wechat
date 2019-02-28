@@ -86,7 +86,7 @@ uninstall_plugin() {
   fi
 }
 
-# omw uninstall
+# omw un
 if [[ $1 == "un" ]]; then
   PS3='你的选择：'
   options=("微信小助手" "Oh My WeChat" "两个都卸载" "取消")
