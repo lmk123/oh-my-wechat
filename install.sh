@@ -12,16 +12,16 @@ if [[ ! -w ${bin_dir} ]]; then
   sudo chown $(whoami) ${bin_dir}
 fi
 
-# 工作目录
-work_dir="${HOME}/.oh_my_wechat"
-
 # 创建工作目录
-if [[ ! -e ${work_dir} ]]; then
-  mkdir ${work_dir}
+if [[ ! -e ${omw_work_dir} ]]; then
+  mkdir ${omw_work_dir}
 fi
 
 echo "开始下载 Oh My WeChat..."
+# 从 GitHub 上下载脚本
 curl --retry 2 -o ${omw_bin_file} https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/main.sh
+# 本地开发时直接将文件复制过去
+#cp ./main.sh ${omw_bin_file}
 
 if [[ 0 -eq $? ]]; then
   # 给 omw 添加执行权限

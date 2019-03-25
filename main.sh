@@ -63,6 +63,38 @@ download() {
   fi
 }
 
+plist_path="${HOME}/Library/LaunchAgents/cn.limingkai.oh-my-wechat.plist"
+
+open_auto_start() {
+  cat > ${plist_path} <<EOL
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>cn.limingkai.oh-my-wechat</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>/usr/local/bin/omw</string>
+      <string>-n</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+  </dict>
+</plist>
+EOL
+  echo_with_date "已开启开机自启动"
+}
+
+close_auto_start() {
+  if [[ -e ${plist_path} ]]; then
+    rm ${plist_path}
+    echo_with_date "已关闭开机自启动"
+  else
+    echo_with_date "当前没有开启开机自启动"
+  fi
+}
+
 # 卸载 Oh My WeChat
 uninstall_omw() {
   # 删除软链
@@ -79,12 +111,26 @@ uninstall_plugin() {
     download ${current_version} "卸载小助手时需要先下载小助手的安装包"
     # 运行卸载脚本
     ./WeChatPlugin-MacOS-${current_version}/Other/Uninstall.sh
+    # 删除开启自启动配置文件
+    close_auto_start
     echo_with_date "微信小助手卸载完成"
     if [[ ${is_wechat_running} != "0" ]]; then
       echo_with_date "检测到微信正在运行，需要重启微信才能关闭小助手"
     fi
   fi
 }
+
+# omw open
+if [[ $1 == "open" ]]; then
+  open_auto_start
+  exit 0
+fi
+
+# omw close
+if [[ $1 == "close" ]]; then
+  close_auto_start
+  exit 0
+fi
 
 # omw un
 if [[ $1 == "un" ]]; then
