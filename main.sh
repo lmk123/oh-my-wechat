@@ -124,6 +124,8 @@ uninstall_plugin() {
     if [[ ${is_wechat_running} != "0" ]]; then
       echo_with_date "检测到微信正在运行，需要重启微信才能关闭小助手"
     fi
+  else
+    echo_with_date "当前没有安装微信小助手，无需卸载"
   fi
 }
 
