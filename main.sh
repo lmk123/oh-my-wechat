@@ -109,6 +109,8 @@ close_auto_start() {
 
 # 卸载 Oh My WeChat
 uninstall_omw() {
+  # 删除开启自启动配置文件
+  close_auto_start
   # 删除软链
   rm -f /usr/local/bin/omw
   # 删除工作目录
@@ -123,8 +125,6 @@ uninstall_plugin() {
     download ${current_version} "卸载小助手时需要先下载小助手的安装包"
     # 运行卸载脚本
     ./WeChatPlugin-MacOS-${current_version}/Other/Uninstall.sh
-    # 删除开启自启动配置文件
-    close_auto_start
     echo_with_date "微信小助手卸载完成"
     if [[ ${is_wechat_running} != "0" ]]; then
       echo_with_date "检测到微信正在运行，需要重启微信才能关闭小助手"
