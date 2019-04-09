@@ -28,7 +28,8 @@ if [[ 0 -eq $? ]]; then
   chmod 755 ${omw_bin_file}
   # 创建一个到 /usr/local/bin/omw 的软链
   ln -sf ${omw_bin_file} ${soft_link_file}
-  echo "成功安装 oh-my-wechat，现在可以运行 ${omw_str} 打开微信了"
+  echo "成功安装 Oh My Wechat！即将安装微信小助手……"
+  ${omw_bin_file} -n
 else
   echo "下载 Oh My WeChat 时失败，请稍后重试。"
   exit 1
