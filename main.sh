@@ -173,7 +173,7 @@ install() {
     download ${_version}
 
     # 删除之前已经下载（一般是旧版本）的安装包
-    if [[ ${_version} != ${downloaded_version} ]]; then
+    if [[ ! -z ${downloaded_version} ]] && [[ ${_version} != ${downloaded_version} ]]; then
       rm -rf ./WeChatPlugin-MacOS-${downloaded_version}
       echo_with_date "已删除 v${downloaded_version} 的安装包"
     fi
