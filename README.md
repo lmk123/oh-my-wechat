@@ -2,6 +2,12 @@
 
 这是为 [TKkk-iOSer/WeChatPlugin-MacOS](https://github.com/TKkk-iOSer/WeChatPlugin-MacOS)（后面称呼为“小助手”）开发的安装/更新工具。
 
+## 注意！！
+
+目前 [TKkk-iOSer/WeChatPlugin-MacOS](https://github.com/TKkk-iOSer/WeChatPlugin-MacOS) 已经删库了，但小助手是从 [Releases](https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/releases) 里下载安装包的，所以只要 Releases 里的文件还在，Oh My WeChat 就可以正常使用。
+
+为了避免 Releases 里的文件也被删除，建议大家自行下载安装包，然后使用 `omw load` 命令安装，具体方法请参考下面的 [omw load](#omw-load) 一节。
+
 ## 安装 Oh My WeChat
 
 在终端中运行 `curl -o- -L https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/install.sh | bash -s` 即可。
