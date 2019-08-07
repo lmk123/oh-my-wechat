@@ -29,10 +29,10 @@ work_dir="${HOME}/.oh_my_wechat"
 cd ${work_dir}
 
 # 记录小助手的版本的文件地址，同时也可以用来判断小助手有没有被安装
-version_plist_path="${wechat_path}/Contents/MacOS/WeChatPlugin.framework/Resources/Info.plist"
+version_plist_path="${wechat_path}/Contents/MacOS/WeChatExtension.framework/Resources/Info.plist"
 
 # 已经下载过的安装包版本，同时当微信自动更新导致小助手被删除时，作为上一次安装过的版本号使用
-downloaded_version=$(find . -maxdepth 1 -type d -name 'WeChatPlugin-MacOS-*' -print -quit | grep -o '\d\{1,\}\.\d\{1,\}\.\d\{1,\}')
+downloaded_version=$(find . -maxdepth 1 -type d -name 'WeChatExtension-ForMac-*' -print -quit | grep -o '\d\{1,\}\.\d\{1,\}\.\d\{1,\}')
 
 # 用 current_version 记录小助手的当前版本
 if [[ -f ${version_plist_path} ]]; then
@@ -51,7 +51,7 @@ is_wechat_running="${is_wechat_running%"${is_wechat_running##*[![:space:]]}"}"
 
 # 下载指定版本的小助手
 download() {
-  if [[ ! -e "WeChatPlugin-MacOS-${1}" ]]; then
+  if [[ ! -e "WeChatExtension-ForMac-${1}" ]]; then
     # 第二个参数作为要打印的消息
     if [[ -n ${2} ]]; then
       echo_with_date ${2}
@@ -60,7 +60,7 @@ download() {
     echo_with_date "如果下载速度很慢，建议通过其它方式下载安装包，然后使用 omw load 命令导入"
     echo_with_date "详情请参阅文档 https://github.com/lmk123/oh-my-wechat#omw-load"
     # 下载压缩包
-    curl --retry 2 -L -o ${1}.zip https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/archive/v${1}.zip
+    curl --retry 2 -L -o ${1}.zip https://github.com/MustangYM/WeChatExtension-ForMac/archive/v${1}.zip
     if [[ 0 -eq $? ]]; then
       # 解压为同名文件夹
       unzip -o -q ${1}.zip
@@ -124,7 +124,7 @@ uninstall_plugin() {
     # 确保有当前版本的小助手安装包
     download ${current_version} "卸载小助手时需要先下载小助手的安装包"
     # 运行卸载脚本
-    ./WeChatPlugin-MacOS-${current_version}/Other/Uninstall.sh
+    ./WeChatExtension-ForMac-${current_version}/WeChatExtension/Rely/Uninstall.sh
     echo_with_date "微信小助手卸载完成"
     if [[ ${is_wechat_running} != "0" ]]; then
       echo_with_date "检测到微信正在运行，需要重启微信才能关闭小助手"
@@ -155,7 +155,7 @@ install() {
       echo_with_date "未安装微信小助手，也没有下载过安装包，所以即使使用了 -n 参数，仍需要检查并下载新版本"
     fi
     echo_with_date "正在查询新版本……"
-    latest_version=$(curl --retry 2 -I -s https://github.com/TKkk-iOSer/WeChatPlugin-MacOS/releases/latest | grep Location | sed -n 's/.*\/v\(.*\)/\1/p')
+    latest_version=$(curl --retry 2 -I -s https://github.com/MustangYM/WeChatExtension-ForMac/releases/latest | grep Location | sed -n 's/.*\/v\(.*\)/\1/p')
     if [[ -z "$latest_version" ]]; then
       echo_with_date "查询新版本时失败，请稍后重试"
       exit 1
@@ -174,12 +174,12 @@ install() {
 
     # 删除之前已经下载（一般是旧版本）的安装包
     if [[ ! -z ${downloaded_version} ]] && [[ ${_version} != ${downloaded_version} ]]; then
-      rm -rf ./WeChatPlugin-MacOS-${downloaded_version}
+      rm -rf ./WeChatExtension-ForMac-${downloaded_version}
       echo_with_date "已删除 v${downloaded_version} 的安装包"
     fi
 
     echo_with_date "开始安装微信小助手……"
-    ./WeChatPlugin-MacOS-${_version}/Other/Install.sh
+    ./WeChatExtension-ForMac-${_version}/WeChatExtension/Rely/Install.sh
     echo_with_date "微信小助手安装完成。"
     installed="1"
   fi
@@ -235,7 +235,7 @@ fi
 
 # omw load [version]
 if [[ $1 == "load" ]]; then
-  _file_name="WeChatPlugin-MacOS-${2}.zip"
+  _file_name="WeChatExtension-ForMac-${2}.zip"
   _file_path="${initial_pwd}/${_file_name}"
   if [[ -e ${_file_path} ]]; then
     # 解压到工作目录下
@@ -244,7 +244,7 @@ if [[ $1 == "load" ]]; then
 
     # 删除已有的安装包
     if [[ ! -z ${downloaded_version} ]] && [[ ${2} != ${downloaded_version} ]]; then
-      rm -rf "./WeChatPlugin-MacOS-${downloaded_version}"
+      rm -rf "./WeChatExtension-ForMac-${downloaded_version}"
       echo_with_date "已删除 v${downloaded_version} 的安装包"
     fi
   else
