@@ -4,7 +4,11 @@
 
 ## 安装 Oh My WeChat
 
-在终端中运行 `curl -o- -L https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/install.sh | bash -s` 即可。
+在终端中运行一下命令即可。
+`curl -o- -L https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/install.sh | bash -s`
+
+如选择自有源请使用
+`curl -o- -L https://raw.githubusercontent.com/wgxdz/oh-my-wechat/master/install.sh | bash -s`
 
 Oh My WeChat 自身没有自动更新的功能，不过你可以关注本项目（选择 Releases Only），这样在发布新版本时你能得到通知，然后你可以重新运行这条命令将 Oh My WeChat 更新到最新版本。
 
@@ -42,7 +46,7 @@ $ omw
 $ cd ~/Downloads && omw load 1.8.7
 ```
 
-如果你下载的安装包不在*下载文件夹*中，而且你不知道命令怎么写，那么你可以先将安装包移动到*下载文件夹*中，然后运行上面的命令。 
+如果你下载的安装包不在*下载文件夹*中，而且你不知道命令怎么写，那么你可以先将安装包移动到*下载文件夹*中，然后运行上面的命令。
 
 ### `omw open` 和 `omw close`
 
