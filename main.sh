@@ -211,8 +211,6 @@ install() {
       echo_with_date "由于使用了 -g 参数，将会从 GitHub 仓库检查更新及下载安装包"
       echo_with_date "如果检查更新失败或下载速度很慢，建议使用 omw load 命令导入安装包"
       echo_with_date "详情请参阅文档 https://github.com/lmk123/oh-my-wechat#omw-load"
-    else
-      echo "默认使用镜像仓库检查更新及下载安装包，如果要使用 GitHub 仓库，请添加 -g 参数"
     fi
 
     echo_with_date "正在查询新版本……"
