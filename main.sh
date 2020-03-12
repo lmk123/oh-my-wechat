@@ -4,6 +4,54 @@ echo_with_date() {
   echo "[`date '+%H:%M:%S'`]" $1
 }
 
+# 从码云获取最新版本号
+get_latest_version_from_gitee() {
+  curl --retry 2 -s https://gitee.com/mirrors/wechatextension-formac/releases | grep -m 1 -i 'mirrors\/wechatextension-formac\/tree\/v' | sed -n 's/.*\/v\(.*\)" .*/\1/p'
+}
+
+# 从 GitHub 获取最新版本号
+get_latest_version_from_github() {
+  curl --retry 2 -I -s https://github.com/MustangYM/WeChatExtension-ForMac/releases/latest | grep -i Location | sed -n 's/.*\/v\(.*\)/\1/p'
+}
+
+# 获取 GitHub 安装包的下载地址
+get_download_url_from_github() {
+  echo https://github.com/MustangYM/WeChatExtension-ForMac/archive/v${1}.zip
+}
+
+# 获取码云安装包下载地址
+get_download_url_from_gitee() {
+  echo https://gitee.com/mirrors/wechatextension-formac/repository/archive/v${1}?format=zip
+}
+
+args_string=$*
+
+get_download_url() {
+  if [[ $args_string =~ "-g" ]]
+  then
+    get_download_url_from_github $1
+  else
+    get_download_url_from_gitee $1
+  fi
+}
+
+get_latest_version() {
+  if [[ $args_string =~ "-g" ]]
+  then
+    get_latest_version_from_github
+  else
+    get_latest_version_from_gitee
+  fi
+}
+
+# 保存一下 -n 参数，给 install 方法作为参数用
+if [[ $* =~ "-n" ]]
+then
+  has_n="-n"
+else
+  has_n=""
+fi
+
 # select 提示语
 PS3='你的选择：'
 
@@ -57,13 +105,16 @@ download() {
       echo_with_date ${2}
     fi
     echo_with_date "开始下载微信小助手 v${1}……"
-    echo_with_date "如果下载速度很慢，建议通过其它方式下载安装包，然后使用 omw load 命令导入"
-    echo_with_date "详情请参阅文档 https://github.com/lmk123/oh-my-wechat#omw-load"
     # 下载压缩包
-    curl --retry 2 -L -o ${1}.zip https://github.com/MustangYM/WeChatExtension-ForMac/archive/v${1}.zip
+    curl --retry 2 -L -o ${1}.zip $(get_download_url $1)
     if [[ 0 -eq $? ]]; then
       # 解压为同名文件夹
       unzip -o -q ${1}.zip
+      # 如果是从码云下载的压缩包，则需要重命名一下文件名，确保跟 GitHub 的处理逻辑一致
+      if [[ ! $args_string =~ "-g" ]]
+      then
+        mv wechatextension-formac WeChatExtension-ForMac-${1}
+      fi
       # 删除压缩包
       rm ${1}.zip
       echo_with_date "下载完成"
@@ -154,8 +205,18 @@ install() {
     if [[ $1 == "-n" ]] && [[ -z ${downloaded_version} ]]; then
       echo_with_date "未安装微信小助手，也没有下载过安装包，所以即使使用了 -n 参数，仍需要检查并下载新版本"
     fi
+
+    if [[ $args_string =~ "-g" ]]
+    then
+      echo_with_date "由于使用了 -g 参数，将会从 GitHub 仓库检查更新及下载安装包"
+      echo_with_date "如果检查更新失败或下载速度很慢，建议使用 omw load 命令导入安装包"
+      echo_with_date "详情请参阅文档 https://github.com/lmk123/oh-my-wechat#omw-load"
+    else
+      echo "默认使用镜像仓库检查更新及下载安装包，如果要使用 GitHub 仓库，请添加 -g 参数"
+    fi
+
     echo_with_date "正在查询新版本……"
-    latest_version=$(curl --retry 2 -I -s https://github.com/MustangYM/WeChatExtension-ForMac/releases/latest | grep -i Location | sed -n 's/.*\/v\(.*\)/\1/p')
+    latest_version=$(get_latest_version)
     if [[ -z "$latest_version" ]]; then
       echo_with_date "查询新版本时失败，请稍后重试"
       exit 1
@@ -284,5 +345,5 @@ if [[ $1 == "un" ]]; then
   exit 0
 fi
 
-install $1
+install ${has_n}
 open_wechat
