@@ -61,6 +61,10 @@ $ cd ~/Downloads && omw load 1.8.7
 
 卸载 Oh My WeChat 或小助手。你可以选择其中一个卸载，或者两个都卸载。
 
+### `omw update`
+
+更新 Oh My WeChat。
+
 ## 运行截图
 
 ### 未安装小助手时运行 `omw`
