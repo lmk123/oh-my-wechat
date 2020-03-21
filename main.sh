@@ -4,6 +4,14 @@ echo_with_date() {
   echo "[`date '+%H:%M:%S'`]" $1
 }
 
+omw_version=1.3.1
+echo_with_date "当前 Oh My WeChat 版本为 v${omw_version}"
+
+# 从 GitHub 获取 owm 版本号
+get_omw_latest_version_from_github() {
+  curl --retry 2 -I -s https://github.com/lmk123/oh-my-wechat/releases/latest | grep -i Location | sed -n 's/.*\/v\(.*\)/\1/p'
+}
+
 # 从码云获取最新版本号
 get_latest_version_from_gitee() {
   curl --retry 2 -s https://gitee.com/mirrors/wechatextension-formac/releases | grep -m 1 -i 'mirrors\/wechatextension-formac\/tree\/v' | sed -n 's/.*\/v\(.*\)" .*/\1/p'
@@ -340,6 +348,43 @@ if [[ $1 == "un" ]]; then
         ;;
       esac
   done
+  exit 0
+fi
+
+# omw update
+if [[ $1 == "update" ]]; then
+  echo_with_date "正在检查 Oh My WeChat 是否有更新..."
+  omw_latest_version=$(get_omw_latest_version_from_github)
+  if [[ -z "$omw_latest_version" ]]; then
+      echo_with_date "查询 Oh My WeChat 新版本时失败，请稍后重试"
+      exit 1
+    else
+      omw_latest_version=${omw_latest_version//$'\r'/}
+      echo_with_date "Oh My WeChat 的最新版本为 v${omw_latest_version}"
+    fi
+    _omw_version=${omw_latest_version}
+  fi
+
+  if [[ ${omw_version} == ${_omw_version} ]]; then
+    echo_with_date "当前已经安装了最新版本的 Oh My WeChat，无需重新安装"
+  else
+    omw_str="omw"
+    omw_work_dir="${HOME}/.oh_my_wechat"
+    omw_bin_file="${omw_work_dir}/${omw_str}"
+    # 下载要安装的版本
+    echo_with_date "开始下载 Oh My WeChat..."
+    curl --retry 2 -o ${omw_bin_file} https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/main.sh &> /dev/null
+
+    if [[ 0 -eq $? ]]; then
+      # 给 omw 添加执行权限
+      chmod 755 ${omw_bin_file}
+      echo_with_date "成功更新 Oh My Wechat！即将安装微信小助手..."
+      ${omw_bin_file} -n
+    else
+      echo_with_date "下载 Oh My WeChat 时失败，请稍后重试。"
+      exit 1
+    fi
+  fi
   exit 0
 fi
 
