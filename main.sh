@@ -378,10 +378,9 @@ if [[ $1 == "update" ]]; then
     if [[ 0 -eq $? ]]; then
       # 给 omw 添加执行权限
       chmod 755 ${omw_bin_file}
-      echo_with_date "成功更新 Oh My Wechat！即将安装微信小助手..."
-      ${omw_bin_file} -n
+      echo_with_date "Oh My Wechat 更新完成，现在的版本是 ${_omw_version}"
     else
-      echo_with_date "下载 Oh My WeChat 时失败，请稍后重试。"
+      echo_with_date "下载更新时失败，请稍后重试。"
       exit 1
     fi
   fi
