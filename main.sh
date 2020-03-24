@@ -356,14 +356,13 @@ if [[ $1 == "update" ]]; then
   echo_with_date "正在检查 Oh My WeChat 是否有更新..."
   omw_latest_version=$(get_omw_latest_version_from_github)
   if [[ -z "$omw_latest_version" ]]; then
-      echo_with_date "查询 Oh My WeChat 新版本时失败，请稍后重试"
-      exit 1
-    else
-      omw_latest_version=${omw_latest_version//$'\r'/}
-      echo_with_date "Oh My WeChat 的最新版本为 v${omw_latest_version}"
-    fi
-    _omw_version=${omw_latest_version}
+    echo_with_date "查询 Oh My WeChat 新版本时失败，请稍后重试"
+    exit 1
+  else
+    omw_latest_version=${omw_latest_version//$'\r'/}
+    echo_with_date "Oh My WeChat 的最新版本为 v${omw_latest_version}"
   fi
+  _omw_version=${omw_latest_version}
 
   if [[ ${omw_version} == ${_omw_version} ]]; then
     echo_with_date "当前已经安装了最新版本的 Oh My WeChat，无需重新安装"
@@ -378,7 +377,7 @@ if [[ $1 == "update" ]]; then
     if [[ 0 -eq $? ]]; then
       # 给 omw 添加执行权限
       chmod 755 ${omw_bin_file}
-      echo_with_date "Oh My Wechat 更新完成，现在的版本是 ${_omw_version}"
+      echo_with_date "Oh My Wechat 更新完成。"
     else
       echo_with_date "下载更新时失败，请稍后重试。"
       exit 1
