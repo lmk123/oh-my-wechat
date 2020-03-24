@@ -358,11 +358,10 @@ if [[ $1 == "update" ]]; then
   if [[ -z "$omw_latest_version" ]]; then
       echo_with_date "查询 Oh My WeChat 新版本时失败，请稍后重试"
       exit 1
-    else
+  else
       omw_latest_version=${omw_latest_version//$'\r'/}
       echo_with_date "Oh My WeChat 的最新版本为 v${omw_latest_version}"
-    fi
-    _omw_version=${omw_latest_version}
+       _omw_version=${omw_latest_version}
   fi
 
   if [[ ${omw_version} == ${_omw_version} ]]; then
