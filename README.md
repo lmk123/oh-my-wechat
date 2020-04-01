@@ -65,6 +65,14 @@ $ cd ~/Downloads && omw load 1.8.7
 
 更新 Oh My WeChat。
 
+## 关于作者
+
+欢迎关注我的公众号反馈问题：
+
+<img width="390" src="https://user-images.githubusercontent.com/5035625/78118873-2ec7e980-743a-11ea-8803-a9a4265f321a.jpg">
+
+如果看不到图片，可以在微信里搜索 `DoneIsBetterThenPerfect` 关注。
+
 ## 运行截图
 
 ### 未安装小助手时运行 `omw`
