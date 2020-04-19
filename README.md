@@ -71,7 +71,7 @@ $ cd ~/Downloads && omw load 1.8.7
 
 <img width="390" src="https://user-images.githubusercontent.com/5035625/78118873-2ec7e980-743a-11ea-8803-a9a4265f321a.jpg">
 
-如果看不到图片，可以在微信里搜索 `DoneIsBetterThenPerfect` 关注。
+如果看不到图片，可以在微信里搜索 `DoneIsBetterThanPerfect` 关注。
 
 ## 运行截图
 
