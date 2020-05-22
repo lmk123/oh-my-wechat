@@ -372,7 +372,7 @@ if [[ $1 == "update" ]]; then
     omw_bin_file="${omw_work_dir}/${omw_str}"
     # 下载要安装的版本
     echo_with_date "开始下载 Oh My WeChat..."
-    curl --retry 2 -o ${omw_bin_file} https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/main.sh &> /dev/null
+    curl --retry 2 -o ${omw_bin_file} https://omw.limingkai.cn/main.sh &> /dev/null
 
     if [[ 0 -eq $? ]]; then
       # 给 omw 添加执行权限
