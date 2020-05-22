@@ -4,7 +4,7 @@
 
 ## 安装 Oh My WeChat
 
-在终端中运行 `curl -o- -L https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/install.sh | bash -s` 即可。
+在终端中运行 `curl -o- -L https://omw.limingkai.cn/install.sh | bash -s` 即可。
 
 安装之后，你可以运行 `omw update` 命令更新 Oh My WeChat。
 
