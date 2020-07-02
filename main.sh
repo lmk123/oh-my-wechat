@@ -12,44 +12,12 @@ get_omw_latest_version_from_github() {
   curl --retry 2 -I -s https://github.com/lmk123/oh-my-wechat/releases/latest | grep -i Location | sed -n 's/.*\/v\(.*\)/\1/p'
 }
 
-# 从码云获取最新版本号
-get_latest_version_from_gitee() {
-  curl --retry 2 -s https://gitee.com/mirrors/wechatextension-formac/releases | grep -m 1 -i 'mirrors\/wechatextension-formac\/tree\/v' | sed -n 's/.*\/v\(.*\)" .*/\1/p'
-}
-
-# 从 GitHub 获取最新版本号
-get_latest_version_from_github() {
-  curl --retry 2 -I -s https://github.com/MustangYM/WeChatExtension-ForMac/releases/latest | grep -i Location | sed -n 's/.*\/v\(.*\)/\1/p'
-}
-
-# 获取 GitHub 安装包的下载地址
-get_download_url_from_github() {
+get_download_url() {
   echo https://github.com/MustangYM/WeChatExtension-ForMac/archive/v${1}.zip
 }
 
-# 获取码云安装包下载地址
-get_download_url_from_gitee() {
-  echo https://gitee.com/mirrors/wechatextension-formac/repository/archive/v${1}?format=zip
-}
-
-args_string=$*
-
-get_download_url() {
-  if [[ $args_string =~ "-g" ]]
-  then
-    get_download_url_from_github $1
-  else
-    get_download_url_from_gitee $1
-  fi
-}
-
 get_latest_version() {
-  if [[ $args_string =~ "-g" ]]
-  then
-    get_latest_version_from_github
-  else
-    get_latest_version_from_gitee
-  fi
+  curl --retry 2 -I -s https://github.com/MustangYM/WeChatExtension-ForMac/releases/latest | grep -i Location | sed -n 's/.*\/v\(.*\)/\1/p'
 }
 
 # 保存一下 -n 参数，给 install 方法作为参数用
@@ -118,11 +86,6 @@ download() {
     if [[ 0 -eq $? ]]; then
       # 解压为同名文件夹
       unzip -o -q ${1}.zip
-      # 如果是从码云下载的压缩包，则需要重命名一下文件名，确保跟 GitHub 的处理逻辑一致
-      if [[ ! $args_string =~ "-g" ]]
-      then
-        mv wechatextension-formac WeChatExtension-ForMac-${1}
-      fi
       # 删除压缩包
       rm ${1}.zip
       echo_with_date "下载完成"
@@ -214,12 +177,9 @@ install() {
       echo_with_date "未安装微信小助手，也没有下载过安装包，所以即使使用了 -n 参数，仍需要检查并下载新版本"
     fi
 
-    if [[ $args_string =~ "-g" ]]
-    then
-      echo_with_date "由于使用了 -g 参数，将会从 GitHub 仓库检查更新及下载安装包"
-      echo_with_date "如果检查更新失败或下载速度很慢，建议使用 omw load 命令导入安装包"
-      echo_with_date "详情请参阅文档 https://github.com/lmk123/oh-my-wechat#omw-load"
-    fi
+    echo_with_date "将会从 GitHub 仓库检查更新及下载安装包，"
+    echo_with_date "如果检查更新失败或下载速度很慢，建议使用 omw load 命令导入安装包，"
+    echo_with_date "详情请参阅文档 https://github.com/lmk123/oh-my-wechat#omw-load"
 
     echo_with_date "正在查询新版本……"
     latest_version=$(get_latest_version)
