@@ -98,7 +98,55 @@ download() {
 
 plist_path="${HOME}/Library/LaunchAgents/cn.limingkai.oh-my-wechat.plist"
 
+ask_for_auto_start() {
+  if [[ -e ${plist_path} ]]; then
+    echo_with_date "已开启微信小助手开机自动安装"
+  else
+    echo_with_date "未开启微信小助手开机自动安装"
+    echo_with_date "是否开启微信小助手开机自动安装, 以避免微信更新后卸载微信小助手？"
+    options=("是" "否")
+    select opt in "${options[@]}"
+    do
+      case ${opt} in
+        "是")
+          _to_open='yes'
+          break
+          ;;
+        "否")
+          _to_open='no'
+          break
+          ;;
+        *)
+          echo_with_date "无效的选择"
+          ;;
+        esac
+    done
+
+    if [[ $_to_open == "yes" ]]; then
+      open_auto_start
+    fi
+  fi
+}
+
 open_auto_start() {
+  echo_with_date "开机自动安装完微信小助手后是否打开微信？"
+  options=("是" "否")
+  select opt in "${options[@]}"
+  do
+    case ${opt} in
+      "是")
+        _is_open="-o"
+        break
+        ;;
+      "否")
+        break
+        ;;
+      *)
+        echo_with_date "无效的选择"
+        ;;
+      esac
+  done
+
   cat > ${plist_path} <<EOL
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -110,22 +158,22 @@ open_auto_start() {
     <array>
       <string>/usr/local/bin/omw</string>
       <string>silent</string>
-      <string>${1}</string>
+      <string>${_is_open}</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
   </dict>
 </plist>
 EOL
-  echo_with_date "已开启开机自启动"
+  echo_with_date "已开启微信小助手开机自动安装"
 }
 
 close_auto_start() {
   if [[ -e ${plist_path} ]]; then
     rm ${plist_path}
-    echo_with_date "已关闭开机自启动"
+    echo_with_date "已关闭微信小助手开机自动安装"
   else
-    echo_with_date "当前没有开启开机自启动"
+    echo_with_date "当前没有开启微信小助手开机自动安装"
   fi
 }
 
@@ -165,8 +213,8 @@ omw (Oh My WeChat) 是微信小助手(MustangYM/WeChatExtension-ForMac)的安装
   omw                 自动下载/检查更新最新版小助手, 若有本地安装包且是最新版才用它安装小助手
   omw -n              若有本地安装包则用它安装小助手, 否则自动下载最新版小助手
   omw load <version>  将自行下载的某版本的小助手的安装包导入到 Oh My WeChat 里
-  omw close           关闭微信小助手开机自启
-  omw open            开启微信小助手开机自启.
+  omw close           关闭微信小助手开机自动安装
+  omw open            开启微信小助手开机自动安装
   omw un              卸载 Oh My WeChat 或小助手. 你可以选择其中一个卸载，或者两个都卸载
   omw update          更新 Oh My WeChat 自身
 
@@ -261,24 +309,7 @@ fi
 
 # omw open
 if [[ $1 == "open" ]]; then
-  echo_with_date "安装完微信小助手后是否打开微信？"
-  options=("是" "否")
-  select opt in "${options[@]}"
-  do
-    case ${opt} in
-      "是")
-        _is_open="-o"
-        break
-        ;;
-      "否")
-        break
-        ;;
-      *)
-        echo_with_date "无效的选择"
-        ;;
-      esac
-  done
-  open_auto_start ${_is_open}
+  open_auto_start
   exit 0
 fi
 
@@ -376,6 +407,7 @@ fi
 
 if [[ $# -eq 0 ]] || [[ $# -eq 1 && $1 == "-n" ]]; then
   install ${has_n}
+  ask_for_auto_start
   open_wechat
   exit 0
 fi
