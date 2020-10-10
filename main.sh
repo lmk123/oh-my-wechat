@@ -156,6 +156,34 @@ uninstall_plugin() {
   fi
 }
 
+omw_help() {
+  echo \
+'
+omw (Oh My WeChat) 是微信小助手(MustangYM/WeChatExtension-ForMac)的安装/更新工具
+
+用法:
+  omw                 自动下载/检查更新最新版小助手, 若有本地安装包且是最新版才用它安装小助手
+  omw -n              若有本地安装包则用它安装小助手, 否则自动下载最新版小助手
+  omw load <version>  将自行下载的某版本的小助手的安装包导入到 Oh My WeChat 里
+  omw close           关闭微信小助手开机自启
+  omw open            开启微信小助手开机自启.
+  omw un              卸载 Oh My WeChat 或小助手. 你可以选择其中一个卸载，或者两个都卸载
+  omw update          更新 Oh My WeChat 自身
+
+说明:
+  * 微信自动更新后会删除小助手, 为避免此, 执行 `omw open` 以开启开机自动安装小助手功能
+  * 刚开机或无网络, 且下载小助手或很费时, 故建议初次安装时运行 `omw` 或 `omw load <cersion>`,
+    会将安装包存到本地 `~/.oh_my_wechat/WeChatExtension-ForMac-x.x.x`, 故开机后会直接用本地
+    安装包安装小助手, 无需再次下载.
+  * `omw load <version>` 用例:
+    浏览器开[小助手最新版本发布页]
+        (https://github.com/MustangYM/WeChatExtension-ForMac/releases/latest)
+    点击 Source code (zip) 将安装包下载下来
+    若下载版本是 v1.8.7，则下载文件夹内会有一个 WeChatExtension-ForMac-1.8.7.zip 安装包
+    在终端运行如此命令导入安装包 `cd ~/Downloads && omw load 1.8.7`
+'
+}
+
 # 安装小助手
 install() {
 ########################################################################################
@@ -346,5 +374,13 @@ if [[ $1 == "update" ]]; then
   exit 0
 fi
 
-install ${has_n}
-open_wechat
+if [[ $# -eq 0 ]] || [[ $# -eq 1 && $1 == "-n" ]]; then
+  install ${has_n}
+  open_wechat
+  exit 0
+fi
+
+# if [[ $1 == "help" ]] || [[ $1 == "--help" ]] || [[ $1 == "-h" ]]; then
+omw_help
+# fi
+
