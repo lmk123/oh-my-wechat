@@ -98,7 +98,55 @@ download() {
 
 plist_path="${HOME}/Library/LaunchAgents/cn.limingkai.oh-my-wechat.plist"
 
+ask_for_auto_start() {
+  if [[ -e ${plist_path} ]]; then
+    echo_with_date "已开启开机自动安装微信小助手"
+  else
+    echo_with_date "未开启开机自动安装微信小助手"
+    echo_with_date "是否开启开机自动安装微信小助手, 以避免微信更新后卸载微信小助手？"
+    options=("是" "否")
+    select opt in "${options[@]}"
+    do
+      case ${opt} in
+        "是")
+          _to_open='yes'
+          break
+          ;;
+        "否")
+          _to_open='no'
+          break
+          ;;
+        *)
+          echo_with_date "无效的选择"
+          ;;
+        esac
+    done
+
+    if [[ $_to_open == "yes" ]]; then
+      open_auto_start
+    fi
+  fi
+}
+
 open_auto_start() {
+  echo_with_date "是否要在开机后自动打开微信？"
+  options=("是" "否")
+  select opt in "${options[@]}"
+  do
+    case ${opt} in
+      "是")
+        _is_open="-o"
+        break
+        ;;
+      "否")
+        break
+        ;;
+      *)
+        echo_with_date "无效的选择"
+        ;;
+      esac
+  done
+
   cat > ${plist_path} <<EOL
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -110,22 +158,22 @@ open_auto_start() {
     <array>
       <string>/usr/local/bin/omw</string>
       <string>silent</string>
-      <string>${1}</string>
+      <string>${_is_open}</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
   </dict>
 </plist>
 EOL
-  echo_with_date "已开启开机自启动"
+  echo_with_date "已开启微信小助手开机自动安装"
 }
 
 close_auto_start() {
   if [[ -e ${plist_path} ]]; then
     rm ${plist_path}
-    echo_with_date "已关闭开机自启动"
+    echo_with_date "已关闭开机自动安装微信小助手"
   else
-    echo_with_date "当前没有开启开机自启动"
+    echo_with_date "当前没有开启开机自动安装微信小助手"
   fi
 }
 
@@ -154,6 +202,33 @@ uninstall_plugin() {
   else
     echo_with_date "当前没有安装微信小助手，无需卸载"
   fi
+}
+
+omw_help() {
+  echo \
+'
+omw (Oh My WeChat) 是微信小助手(https://github.com/MustangYM/WeChatExtension-ForMac)的安装/更新工具
+
+用法:
+  omw                 安装或更新到最新版本小助手
+  omw -n              优先安装之前下载过的小助手，若没有才会通过网络下载最新版小助手并安装
+  omw load <version>  将自行下载的某版本的小助手的安装包导入到 Oh My WeChat 里并安装，详情见说明
+  omw open            开启开机自动安装微信小助手
+  omw close           关闭开机自动安装微信小助手
+  omw un              卸载 Oh My WeChat 或小助手. 你可以选择其中一个卸载，或者两个都卸载
+  omw update          更新 Oh My WeChat 自身
+
+说明:
+  * 微信自动更新后会删除小助手, 你可以运行 `omw open` 开启开机自动安装小助手的功能。
+    注意：刚开机时可能没有网络, 而且下载小助手可能会很慢, 所以建议先运行 `omw` 或 `omw load <cersion>`
+    下载一次安装包，这样开机后会优先使用已有的安装包安装小助手，无需重新下载。
+  * `omw load <version>` 使用方法:
+    首先，在浏览器里打开小助手最新版本发布页：
+       https://github.com/MustangYM/WeChatExtension-ForMac/releases/latest
+    然后，点击 Source code (zip) 将安装包下载下来。
+       若下载下来的版本是 v1.8.7，则下载文件夹内会有一个 WeChatExtension-ForMac-1.8.7.zip 安装包。
+    最后，在终端运行此命令导入安装包： cd ~/Downloads && omw load 1.8.7
+'
 }
 
 # 安装小助手
@@ -233,24 +308,7 @@ fi
 
 # omw open
 if [[ $1 == "open" ]]; then
-  echo_with_date "安装完微信小助手后是否打开微信？"
-  options=("是" "否")
-  select opt in "${options[@]}"
-  do
-    case ${opt} in
-      "是")
-        _is_open="-o"
-        break
-        ;;
-      "否")
-        break
-        ;;
-      *)
-        echo_with_date "无效的选择"
-        ;;
-      esac
-  done
-  open_auto_start ${_is_open}
+  open_auto_start
   exit 0
 fi
 
@@ -346,5 +404,14 @@ if [[ $1 == "update" ]]; then
   exit 0
 fi
 
-install ${has_n}
-open_wechat
+if [[ $# -eq 0 ]] || [[ $# -eq 1 && $1 == "-n" ]]; then
+  install ${has_n}
+  ask_for_auto_start
+  open_wechat
+  exit 0
+fi
+
+# if [[ $1 == "help" ]] || [[ $1 == "--help" ]] || [[ $1 == "-h" ]]; then
+omw_help
+# fi
+
