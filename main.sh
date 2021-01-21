@@ -17,7 +17,7 @@ get_download_url() {
 }
 
 get_latest_version() {
-  curl --retry 2 -I -s https://github.com/MustangYM/WeChatExtension-ForMac/releases/latest | grep Location | sed -n 's/.*\/v\(.*\)/\1/p'
+  curl --retry 2 -I -s https://github.com/MustangYM/WeChatExtension-ForMac/releases/latest | grep -i Location: | sed -n 's/.*\/v\(.*\)/\1/p'
 }
 
 # 保存一下 -n 参数，给 install 方法作为参数用
