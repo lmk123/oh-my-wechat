@@ -4,7 +4,7 @@ echo_with_date() {
   echo "[`date '+%H:%M:%S'`]" $1
 }
 
-omw_version=2.1.2
+omw_version=2.1.3
 echo_with_date "当前 Oh My WeChat 版本为 v${omw_version}"
 
 # 从 GitHub 获取 owm 版本号
