@@ -7,17 +7,22 @@ echo_with_date() {
 omw_version=2.1.3
 echo_with_date "当前 Oh My WeChat 版本为 v${omw_version}"
 
+version_prefix=v
 # 从 GitHub 获取 owm 版本号
 get_omw_latest_version_from_github() {
   curl --retry 2 -I -s https://github.com/lmk123/oh-my-wechat/releases/latest | grep -i Location: | sed -n 's/.*\/v\(.*\)/\1/ip'
 }
 
 get_download_url() {
-  echo https://github.com/MustangYM/WeChatExtension-ForMac/archive/v${1}.zip
+  echo https://github.com/MustangYM/WeChatExtension-ForMac/archive/${version_prefix}${1}.zip
 }
 
 get_latest_version() {
-  curl --retry 2 -I -s https://github.com/MustangYM/WeChatExtension-ForMac/releases/latest | grep -i Location: | sed -n 's/.*\/v\(.*\)/\1/ip'
+  curl --retry 2 -I -s https://github.com/MustangYM/WeChatExtension-ForMac/releases/latest | grep -i Location: | sed -n 's/.*\/\([^0-9.]\{1,\}\)\(.*\)/\2/p'
+}
+
+get_version_prefix() {
+  curl --retry 2 -I -s https://github.com/MustangYM/WeChatExtension-ForMac/releases/latest | grep -i Location: | sed -n 's/.*\/\([^0-9.]\{1,\}\)\(.*\)/\1/p'
 }
 
 # 保存一下 -n 参数，给 install 方法作为参数用
@@ -258,6 +263,7 @@ install() {
 
     echo_with_date "正在查询新版本……"
     latest_version=$(get_latest_version)
+    version_prefix=$(get_version_prefix)
     if [[ -z "$latest_version" ]]; then
       echo_with_date "查询新版本时失败，请稍后重试"
       exit 1
