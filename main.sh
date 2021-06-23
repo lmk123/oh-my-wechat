@@ -406,6 +406,7 @@ fi
 
 if [[ $# -eq 0 ]] || [[ $# -eq 1 && $1 == "-n" ]]; then
   install ${has_n}
+  sudo codesign --sign - --force --deep ${wechat_path}
   ask_for_auto_start
   open_wechat
   exit 0
