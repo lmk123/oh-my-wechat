@@ -410,7 +410,7 @@ fi
 
 if [[ $# -eq 0 ]] || [[ $# -eq 1 && $1 == "-n" ]]; then
   install ${has_n}
-  if check_version $(sw_vers -productVersion) 11.4.1; then
+  if check_version $(sw_vers -productVersion) 11.4; then
     echo "输入开机密码重新签名微信"
     sudo codesign --sign - --force --deep ${wechat_path}
   fi
