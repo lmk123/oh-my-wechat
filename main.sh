@@ -20,6 +20,10 @@ get_latest_version() {
   curl --retry 2 -I -s https://github.com/MustangYM/WeChatExtension-ForMac/releases/latest | grep -i Location: | sed -n 's/.*\/v\(.*\)/\1/p'
 }
 
+check_version() {
+  test "$(echo "$@" | tr " " "\n" | sort -rV | head -n 1)" == "$1"; 
+}
+
 # 保存一下 -n 参数，给 install 方法作为参数用
 if [[ $* =~ "-n" ]]
 then
@@ -406,6 +410,10 @@ fi
 
 if [[ $# -eq 0 ]] || [[ $# -eq 1 && $1 == "-n" ]]; then
   install ${has_n}
+  if check_version $(sw_vers -productVersion) 11.4; then
+    echo "输入开机密码重新签名微信"
+    sudo codesign --sign - --force --deep ${wechat_path}
+  fi
   ask_for_auto_start
   open_wechat
   exit 0
