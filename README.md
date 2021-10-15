@@ -1,3 +1,6 @@
+# 给自己的另一款软件打一个广告：划词翻译，跨平台 & 一站式划词、截图、网页全文、音视频翻译扩展，查看简介：[https://hcfy.app/docs/guides/summary/](https://hcfy.app/docs/guides/summary/)
+
+--------------------------------------
 # Oh My WeChat
 
 这是为 [MustangYM/WeChatExtension-ForMac](https://github.com/MustangYM/WeChatExtension-ForMac)（后面称呼为“小助手”）开发的安装/更新工具。
